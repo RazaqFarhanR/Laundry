@@ -29,7 +29,8 @@ module.exports = (sequelize, DataTypes) => {
     id_transaksi:{
       type: DataTypes.INTEGER,
       primaryKey: true,
-      autoIncrement: true
+      autoIncrement: true,
+      allowNull: false
     },
     id_member: {
       type: DataTypes.INTEGER,
@@ -47,7 +48,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'transaksi',
-    tableName: "transaksi"
+    tableName: 'transaksi'
   });
   return transaksi;
 };

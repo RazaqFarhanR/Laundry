@@ -12,6 +12,11 @@ app.use(bodyParser.urlencoded({extended: true}));
 const models = require('../models/index');
 const member = models.member
 
+//import auth
+const auth = require("../auth")
+const jwt = require("jsonwebtoken")
+const SECRET_KEY = "BelajarNodeJSItuMenyengankan"
+
 //endpoint get data member
 app.get("/", (req,res) =>{
     member.findAll()

@@ -1,0 +1,4 @@
+.btn-filter:focus {
+    background: black;
+    color: white;
+}

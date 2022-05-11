@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       this.hasMany(models.detail_transaksi,{
         foreignKey: "id_paket",
-        as: "detail paket" 
+        as: "paket" 
       })
     }
   }
@@ -24,7 +24,7 @@ module.exports = (sequelize, DataTypes) => {
       autoIncrement: true
     },
     jenis: DataTypes.ENUM("kiloan","selimut","bed_cover","kaos"),
-    harga: DataTypes.INTEGER
+    harga: DataTypes.DOUBLE
   }, {
     sequelize,
     modelName: 'paket',

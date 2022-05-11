@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
       })
       this.belongsTo(models.paket,{
         foreignKey: "id_paket",
-        as: "detail paket"
+        as: "paket"
       })
     }
   }
@@ -25,7 +25,8 @@ module.exports = (sequelize, DataTypes) => {
     id_detail_transaksi: {
       type: DataTypes.INTEGER,
       primaryKey: true,
-      autoIncrement: true 
+      autoIncrement: true,
+      allowNull: false 
     },
     id_transaksi: {
       type: DataTypes.INTEGER,
@@ -35,10 +36,12 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    qty: DataTypes.INTEGER
+    harga: DataTypes.DOUBLE,
+    qty: DataTypes.DOUBLE
   }, {
     sequelize,
     modelName: 'detail_transaksi',
+    tableName: 'detail_transaksi'
   });
   return detail_transaksi;
 };
