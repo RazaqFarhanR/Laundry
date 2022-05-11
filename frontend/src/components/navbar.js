@@ -8,9 +8,9 @@ class Navbar extends React.Component{
     render(){
         return(
             <div className="navbar navbar-expand navbar-light">
-                <a className="navbar-brand ms-5" href="#">
+                <Link to="/" className="navbar-brand ms-5">
                     Laundry
-                </a>
+                </Link>
 
                 {/* show and hide menu */}
                 <button className="navbar-toggler" data-toggle="collapse"
