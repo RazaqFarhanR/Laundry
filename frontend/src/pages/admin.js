@@ -1,19 +1,25 @@
 import React from "react"
 import axios from "axios"
 import {Modal, Button, Form} from "react-bootstrap"
+import Navbar from "../components/navbar"
 
-export default class Member extends React.Component{
+export default class Admin extends React.Component{
     constructor(){
         super()
         this.state = {
-            member: [],
-            id_member: "",
-            nama: "",
+            admin:[],
+            id_user: "",
+            nama:"",
             alamat: "",
-            jenis_kelamin: "",
-            tlp: "",
-            isModalOpen: false,
+            gender: "",
+            phone: "",
+            username: "",
+            password: "",
+            role: "",
+            fillPassword: true,
             token: "",
+            action: "",
+            isModalOpen: false
         }
         if(localStorage.getItem('token')){
             this.state.token = localStorage.getItem('token')
@@ -32,9 +38,28 @@ export default class Member extends React.Component{
         this.setState({
             nama: "",
             alamat: "",
-            jenis_kelamin: "",
-            tlp: "",
+            gender: "",
+            phone: "",
+            username: "",
+            password: "",
+            role: "admin",
+            action: "insert",
             isModalOpen: true,
+        })
+    }
+    handleEdit = (SelectedItem) =>{
+        this.setState({
+            id_user: SelectedItem.id_user,
+            nama: SelectedItem.nama,
+            alamat: SelectedItem.alamat,
+            gender: SelectedItem.gender,
+            phone: SelectedItem.phone,
+            username: SelectedItem.username,
+            password: SelectedItem.password,
+            role: "admin",
+            fillPassword: false,
+            action: "update",
+            isModalOpen: true
         })
     }
     handleClose = () =>{
@@ -47,30 +72,103 @@ export default class Member extends React.Component{
             [e.target.name]: e.target.value
         })
     }
-    getMember = () =>{
-        let url = "http://localhost:2004/member"
-        
+    handleSearch = (e) =>{
+        let url = "http://localhost:2004/user/cari"
+        if (e.keyCode === 13){
+            let data ={
+                keyword: this.state.keyword
+            }
+            axios.post(url, data, this.headerConfig())
+            .then(res =>{
+                this.setState({
+                    users: res.data.user
+                })
+            })
+            .catch(err =>{
+                console.log(err.message)
+            })
+        }
+    }
+    handleSave = (e) =>{
+        e.preventDefault()
+        let form = {
+            id_user: this.state.id_user,
+            nama: this.state.nama,
+            alamat: this.state.alamat,
+            gender: this.state.gender,
+            phone: this.state.phone,
+            username: this.state.username,
+            role: this.state.role
+        }
+        if (this.state.fillPassword){
+            form.password = this.state.password
+        }
+        let url = "http://localhost:1305/api/user"
+
+        if (this.state.action === "insert"){
+            
+            url = "http://localhost:1305/api/user"
+
+            axios.post(url, form, this.headerConfig())
+            .then(res =>{
+                this.getAdmin()
+                this.handleClose()
+            })
+            .catch(err => {
+                console.log(err.message)
+            })
+        }else if (this.state.action === "update"){
+            url = "http://localhost:1305/api/user/" + this.state.id_user
+
+            axios.put(url, form, this.headerConfig())
+            .then(res =>{
+                this.getAdmin()
+                this.handleClose()
+            })
+            .catch(err => {
+                console.log(err.message)
+            })
+        }
+    }
+    handleDelete = (id_user) =>{
+        let url = "http://localhost:1305/api/user/" + id_user
+
+        if (window.confirm('Anda yakin ingin menghapus data ini?')){
+            axios.delete(url, this.headerConfig())
+            .then(res =>{
+                console.log(res.data.message)
+                this.getAdmin()
+            })
+            .catch(err =>{
+                console.log(err.message)
+            })
+        }
+    }
+    getAdmin = () => {
+        let url = "http://localhost:1305/api/user/admin"
         axios.get(url, this.headerConfig())
         .then(res =>{
             this.setState({
-                member: res.data.member
+                admin : res.data.user
             })
         })
         .catch(err =>{
             console.log(err.message)
         })
     }
-    componentDidMount = () => {
-        this.getMember()
+    componentDidMount = () =>{
+        this.getAdmin()
     }
     render(){
         return(
-            <div className="container-fluid">
-                <div className="alert alert-dark mb-4">
-                    <h2>Member</h2>
+            <div>
+                <Navbar/>
+                <div className="card m-3">
+                <div className="card-header" style={{backgroundColor: "rgb(211, 0, 0)", border: "none"}}>
+                    <h2 className="text-light">Admin</h2>
                 </div>
-                <button className="col-2 btn btn-light my-1 mb-3 text-primary" onClick={() => this.handleAdd()}>
-                    Tambah Member
+                <button className="col-2 btn ms-3 my-2" onClick={() => this.handleAdd()} style={{backgroundColor: "black", color: "rgb(0, 222, 222)"}}>
+                    Tambah Admin
                 </button>
                 <table className="table text-center border-dark me-2">
                     <thead>
@@ -84,29 +182,29 @@ export default class Member extends React.Component{
                         </tr>
                     </thead>
                     <tbody>
-                        {this.state.member.map((item, index) =>(
+                        {this.state.admin.map((item, index) =>(
                             <tr key={index}>
                                 <td>{index+1}</td>
                                 <td>{item.nama}</td>
                                 <td>{item.alamat}</td>
-                                <td>{item.jenis_kelamin}</td>
-                                <td>{item.tlp}</td>
+                                <td>{item.gender}</td>
+                                <td>{item.phone}</td>
                                 <td>
                                     <button className="btn btn-light m-1 text-success" onClick={() => this.handleEdit(item)}>Edit</button> 
-                                    <button className="btn btn-light m-1 text-danger" onClick={() => this.handleDelete(item)}>Delete</button> 
+                                    <button className="btn btn-light m-1 text-danger" onClick={() => this.handleDelete(item.id_user)}>Delete</button> 
                                 </td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
 
-                {/* modal member */}
-                <Modal show={this.state.isModalOpen} onHide={this.handleClose}
+                    {/* modal member */}
+                    <Modal show={this.state.isModalOpen} onHide={this.handleClose}
                       size="xl"
                       aria-labelledby="contained-modal-title-vcenter"
                       centered>
                     <Modal.Header closeButton className="">
-                        <Modal.Title>form member</Modal.Title>
+                        <Modal.Title>form admin</Modal.Title>
                     </Modal.Header>
                     <Form className="bg-dark bg-opocity-10" onSubmit={e => this.handleSave(e)}>
                         <Modal.Body>
@@ -126,21 +224,29 @@ export default class Member extends React.Component{
                             </Form.Group>
                             <Form.Group className="mb-3" controlId="jenisKelamin">
                                 <Form.Label className="text-white">Jenis Kelamin</Form.Label>
-                                <Form.Control className="text-warning bg-dark" type="text" name="jenis_kelamin" placeholder="Masukkan jenis kelamin" value={this.state.alamat}
-                                    onChange={e => this.setState({ alamat: e.target.value })}
-                                    required
-                                />                                
+                                    <div className="form-check text-light">
+                                        <input className="form-check-input" type="radio" name="exampleRadios" value={"Laki-laki"} onChange={e => this.setState({ gender: e.target.value })}/>
+                                        <label className="form-check-label" for="exampleRadios1">
+                                            Laki-laki
+                                        </label>
+                                    </div>
+                                    <div className="form-check text-light">
+                                        <input className="form-check-input" type="radio" name="exampleRadios" value={"Perempuan"} onChange={e => this.setState({ gender: e.target.value })}/>
+                                        <label className="form-check-label" for="exampleRadios2">
+                                            Perempuan
+                                        </label>
+                                    </div>
                             </Form.Group>
                             <Form.Group className="mb-3" controlId="telepon">
                                 <Form.Label className="text-white" >Telepon</Form.Label>
-                                <Form.Control className="text-warning bg-dark" type="text" name="Telepon" placeholder="Masukkan Telepon" value={this.state.alamat}
-                                    onChange={e => this.setState({ alamat: e.target.value })}
+                                <Form.Control className="text-warning bg-dark" type="text" name="phone" placeholder="Masukkan Telepon" value={this.state.phone}
+                                    onChange={e => this.setState({ phone: e.target.value })}
                                     required
-                                />                                
+                                />
                             </Form.Group>
                             <Form.Group className="mb-3" controlId="username">
                                 <Form.Label className="text-white">Username</Form.Label>
-                                <Form.Control className="text-warning bg-dark" type="text" name="username" placeholder="Masukkan  Username" value={this.state.username}
+                                <Form.Control className="text-warning bg-dark" type="text" name="username" placeholder="Masukkan Username" value={this.state.username}
                                     onChange={e => this.setState({ username: e.target.value })}
                                     required
                                 />
@@ -173,6 +279,7 @@ export default class Member extends React.Component{
                         </Modal.Footer>
                     </Form>
                 </Modal>
+                </div>
             </div>
         )
     }

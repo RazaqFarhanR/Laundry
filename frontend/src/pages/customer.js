@@ -1,21 +1,24 @@
 import React from "react"
 import axios from "axios"
 import {Modal, Button, Form} from "react-bootstrap"
+import Navbar from "../components/navbar"
 
-
-export default class User extends React.Component{
+export default class Customer extends React.Component{
     constructor(){
         super()
         this.state = {
-            users:[],
+            pelanggan: [],
             id_user: "",
-            nama:"",
+            nama: "",
+            alamat: "",
+            gender: "",
+            phone: "",
             username: "",
             password: "",
-            role: "",
+            isModalOpen: false,
             fillPassword: true,
             token: "",
-            isModalOpen: false
+            action: ""
         }
         if(localStorage.getItem('token')){
             this.state.token = localStorage.getItem('token')
@@ -33,10 +36,27 @@ export default class User extends React.Component{
     handleAdd = () =>{
         this.setState({
             nama: "",
-            username: "",
-            password: "",
-            role: "",
+            alamat: "",
+            gender: "",
+            phone: "",
+            role: "customer",
+            action: "insert",
             isModalOpen: true,
+        })
+    }
+    handleEdit = (SelectedItem) =>{
+        this.setState({
+            id_user: SelectedItem.id_user,
+            nama: SelectedItem.nama,
+            alamat: SelectedItem.alamat,
+            gender: SelectedItem.gender,
+            phone: SelectedItem.phone,
+            username: SelectedItem.username,
+            password: SelectedItem.password,
+            role: "customer",
+            fillPassword: false,
+            action: "update",
+            isModalOpen: true
         })
     }
     handleClose = () =>{
@@ -49,48 +69,110 @@ export default class User extends React.Component{
             [e.target.name]: e.target.value
         })
     }
-    getuser = () => {
-        let url = "http://localhost:2004/user"
+    handleSave = (e) =>{
+        e.preventDefault()
+        let form = {
+            id_user: this.state.id_user,
+            nama: this.state.nama,
+            alamat: this.state.alamat,
+            gender: this.state.gender,
+            phone: this.state.phone,
+            username: this.state.username,
+            role: this.state.role
+        }
+        if (this.state.fillPassword){
+            form.password = this.state.password
+        }
+        let url = ""
+
+        if (this.state.action === "insert"){
+            
+            url = "http://localhost:1305/api/user"
+
+            axios.post(url, form, this.headerConfig())
+            .then(res =>{
+                this.getCustomer()
+                this.handleClose()
+            })
+            .catch(err => {
+                console.log(err.message)
+            })
+        }else if (this.state.action === "update"){
+            url = "http://localhost:1305/api/user/" + this.state.id_user
+
+            axios.put(url, form, this.headerConfig())
+            .then(res =>{
+                this.getCustomer()
+                this.handleClose()
+            })
+            .catch(err => {
+                console.log(err.message)
+            })
+        }
+    }
+    handleDelete = (id_user) =>{
+        let url = "http://localhost:1305/api/user/" + id_user
+
+        if (window.confirm('Anda yakin ingin menghapus data ini?')){
+            axios.delete(url, this.headerConfig())
+            .then(res =>{
+                console.log(res.data.message)
+                this.getCustomer()
+            })
+            .catch(err =>{
+                console.log(err.message)
+            })
+        }
+    }
+    getCustomer = () =>{
+        let url = "http://localhost:1305/api/user/customer"
+        
         axios.get(url, this.headerConfig())
         .then(res =>{
             this.setState({
-                users : res.data.user
+                pelanggan: res.data.user
             })
         })
         .catch(err =>{
             console.log(err.message)
         })
     }
-    componentDidMount = () =>{
-        this.getuser()
+    componentDidMount =     () => {
+        this.getCustomer()
     }
     render(){
         return(
-            <div className="container-fluid">
-                <div className="alert alert-success">
-                    <h2>Users</h2>
+            <div>
+                <Navbar/>
+            <div className="card m-3">
+                <div className="card-header" style={{backgroundColor: "rgb(211, 0, 0)", border: "none"}}>
+                    <h2 className="text-light">Customer</h2>
                 </div>
-                <button className="col-2 btn btn-light my-1 mb-3 text-primary" onClick={() => this.handleAdd()}>
-                    Tambah USER
+                <button className="col-2 btn ms-3 my-2" onClick={() => this.handleAdd()} style={{backgroundColor: "black", color: "rgb(0, 222, 222)"}}>
+                    Tambah Customer
                 </button>
                 <table className="table text-center border-dark me-2">
                     <thead>
                         <tr className="">
-                            <th>#</th>
+                            <th>No</th>
                             <th>Nama</th>
-                            <th>role</th>
+                            <th>Alamat</th>
+                            <th>Jenis Kelamin</th>
+                            <th>Telp</th>
                             <th>Option</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {this.state.users.map((item, index) =>(
+                        {this.state.pelanggan.map((item, index) =>(
                             <tr key={index}>
                                 <td>{index+1}</td>
                                 <td>{item.nama}</td>
-                                <td>{item.role}</td>
+                                <td>{item.alamat}</td>
+                                <td>{item.gender}</td>
+                                <td>{item.phone}</td>
                                 <td>
                                     <button className="btn btn-light m-1 text-success" onClick={() => this.handleEdit(item)}>Edit</button> 
-                                    <button className="btn btn-light m-1 text-danger" onClick={() => this.handleDelete(item)}>Delete</button> 
+                                    <button className="btn btn-light m-1 text-danger" onClick={() => this.handleDelete(item.id_user)}>Delete</button> 
                                 </td>
                             </tr>
                         ))}
@@ -103,7 +185,7 @@ export default class User extends React.Component{
                       aria-labelledby="contained-modal-title-vcenter"
                       centered>
                     <Modal.Header closeButton className="">
-                        <Modal.Title>form member</Modal.Title>
+                        <Modal.Title>form customer</Modal.Title>
                     </Modal.Header>
                     <Form className="bg-dark bg-opocity-10" onSubmit={e => this.handleSave(e)}>
                         <Modal.Body>
@@ -122,22 +204,30 @@ export default class User extends React.Component{
                                 />                                
                             </Form.Group>
                             <Form.Group className="mb-3" controlId="jenisKelamin">
-                                <Form.Label className="text-white">Jenis Kelamin</Form.Label>
-                                <Form.Control className="text-warning bg-dark" type="text" name="jenis_kelamin" placeholder="Masukkan jenis kelamin" value={this.state.alamat}
-                                    onChange={e => this.setState({ alamat: e.target.value })}
-                                    required
-                                />                                
+                                <Form.Label className="text-white">Gender</Form.Label>
+                                    <div className="form-check text-light">
+                                        <input className="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value={"Laki-laki"} onChange={e => this.setState({ gender: e.target.value })}/>
+                                        <label className="form-check-label" for="exampleRadios1">
+                                            Laki-laki
+                                        </label>
+                                    </div>
+                                    <div className="form-check text-light">
+                                        <input className="form-check-input" type="radio" name="exampleRadios" id="exampleRadios2" value={"Perempuan"} onChange={e => this.setState({ gender: e.target.value })}/>
+                                        <label className="form-check-label" for="exampleRadios2">
+                                            Perempuan
+                                        </label>
+                                    </div>
                             </Form.Group>
                             <Form.Group className="mb-3" controlId="telepon">
                                 <Form.Label className="text-white" >Telepon</Form.Label>
-                                <Form.Control className="text-warning bg-dark" type="text" name="Telepon" placeholder="Masukkan Telepon" value={this.state.alamat}
-                                    onChange={e => this.setState({ alamat: e.target.value })}
+                                <Form.Control className="text-warning bg-dark" type="text" name="phone" placeholder="Masukkan Telepon" value={this.state.phone}
+                                    onChange={e => this.setState({ phone: e.target.value })}
                                     required
                                 />                                
                             </Form.Group>
                             <Form.Group className="mb-3" controlId="username">
                                 <Form.Label className="text-white">Username</Form.Label>
-                                <Form.Control className="text-warning bg-dark" type="text" name="username" placeholder="Masukkan  Username" value={this.state.username}
+                                <Form.Control className="text-warning bg-dark" type="text" name="username" placeholder="Masukkan Username" value={this.state.username}
                                     onChange={e => this.setState({ username: e.target.value })}
                                     required
                                 />
@@ -170,6 +260,7 @@ export default class User extends React.Component{
                         </Modal.Footer>
                     </Form>
                 </Modal>
+            </div>
             </div>
         )
     }

@@ -1,4 +1,53 @@
-.btn-filter:focus {
-    background: black;
-    color: white;
+.btn-semua {
+    background-color: whitesmoke;
+    width: 300px;
+    margin-top: 100px;
+    margin-left: 6px;
+    border-width: 1px;
+    border-color: gray;
+    color: black;
+    border-radius: 5px;
+}
+
+.btn-semua:hover {
+    background-color: #0EA9B9;
+    color: whitesmoke;
+    border: none;
+    /* font-style: italic; */
+    font-style: italic;
+}
+
+.card-transaksi {
+    background-color: #BC0725;
+    position: relative;
+    margin-top: 20px;
+    margin-left: 20px;
+    margin-right: 20px;
+    border-radius: 15px;
+    width: 1535x;
+    height: 80px;
+}
+
+.card-bg {
+    position: relative;
+    height: 50px;
+    top: 70px;
+    border-top:none;
+    border-bottom-right-radius: 20px;
+    border-bottom-left-radius: 20px;
+    background-color: #dedede;
+    border: none;    
+}
+
+.text-transaksi {
+    position: relative;
+    font-size: 40px;
+    margin-left: 670px  ;
+    position: relative;
+    bottom:65px;
+    color: aliceblue;
+}
+.card-body-transaksi {
+    position: relative;
+    bottom: 160px;
 }

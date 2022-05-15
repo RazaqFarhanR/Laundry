@@ -16,15 +16,15 @@ export default class TransaksiList extends React.Component{
         return( 
             <div>
                 {/* list */}
-                <div className='card col-sm-12 my-2' style={{backgroundColor:"black"}}>
+                <div className='card col-sm-12 my-1' style={{backgroundColor:"rgb(24, 19, 19)"}}>
                     <div className='card-body row'>
                         <div className='col-lg-2 col-sm-12'>
-                            <small className='text-info'>Member</small>
-                            <h6 className='text-light'>{this.props.member_nama}</h6>
+                            <small className='text-info'>Customer</small>
+                            <h6 className='text-light'>{this.props.nama_customer}</h6>
                         </div>
                         <div className='col-lg-2 col-sm-12'>
                             <small className='text-info'>Alamat</small>
-                            <h6 className='text-light'>{this.props.member_alamat}</h6>
+                            <h6 className='text-light'>{this.props.alamat_customer}</h6>
                         </div>
                         <div className='col-lg-2 col-sm-12'>
                             <small className='text-info'>Status</small>
@@ -51,15 +51,15 @@ export default class TransaksiList extends React.Component{
                     <div className='modal-dialog modal-lg'>
                         <div className='modal-content'>
                             <div className='modal-header bg-success text-white'>
-                                <h5>Detail of Transaction</h5>
+                                <h5>Detail Transaksi</h5>
                             </div>
                             <div className='modal-body'>
-                                <h5>Customer: {this.props.member_nama}</h5>
+                                <h5>Customer: {this.props.nama_customer}</h5>
                                 <h6>Time:{this.ConvertTime(this.props.time)}</h6>
                                 <table className='table table-bordered'>
                                     <thead>
                                         <tr>
-                                            <th>#</th>
+                                            <th>No</th>
                                             <th>Paket</th>
                                             <th>Harga</th>
                                             <th>Qty</th>

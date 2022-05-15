@@ -1,15 +1,15 @@
 import React from "react"
 import Navbar from "../components/navbar"
 
-export default class Home extends React.Component{
+export default class Dashboard extends React.Component{
+ 
     render(){
         return(
             <div>
                 <Navbar/>
                 <div className="container-fluid">
-                    <img src="..." className="img-fluid" alt="..."/>
                     <div className="alert alert-success">
-                        Ini adalah Halaman Home
+                        Ini adalah Halaman Dashboard
                     </div>
                 </div>
             </div>
