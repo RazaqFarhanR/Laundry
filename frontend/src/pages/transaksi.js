@@ -32,10 +32,8 @@ export default class Transaksi extends React.Component{
     }
     handleAdd = () =>{
         this.setState({
-            jenis: "",
-            harga: "",
-            image: null,
-            uploadFile: true,
+            nama_customer: "",
+            alamat:"",
             action: "insert",
             isModalOpen: true
         })
@@ -68,6 +66,28 @@ export default class Transaksi extends React.Component{
         })
     
     }
+    findCustomer = (e) =>{
+        e.preventDefault()
+        let data = {
+            nama: this.state.nama_customer,
+            alamat: this.state.alamat
+        }
+        let url = "http://localhost:1305/api/user/find"
+        axios.post(url, data)
+        .then(res => {
+            if (res.data.data){
+                let id_customer = res.data.data.id_user
+                let customer = res.data.data
+                localStorage.setItem("id_customer", id_customer)
+                localStorage.setItem("customer", JSON.stringify(customer))
+                window.location = "/keranjang"
+            }
+            else{
+                window.alert(res.data.message)
+                // window.reload();
+            }
+        })
+    }
     getTransaksi = () =>{
         let url = "http://localhost:1305/transaksi"
 
@@ -95,7 +115,7 @@ export default class Transaksi extends React.Component{
                     <button className="col-2 btn ms-3 mt-2" onClick={() => this.handleAdd()} style={{backgroundColor: "black", color: "rgb(0, 222, 222)"}}>
                         Tambah Pesanan
                     </button>
-                    <div className="d-flex justify-content-around mx-3  my-3">
+                    <div className="d-flex justify-content-around mx-3  mt-3">
                         <Button className="btn-filter" variant="outline-dark mb-3 w-100 m-1" name="keyword" onClick={this.getTransaksi}>
                             Semua
                         </Button>
@@ -112,17 +132,20 @@ export default class Transaksi extends React.Component{
                             Selesai
                         </Button>   
                     </div>
+                    <div className="mx-3">
                     {this.state.transaksis.map(item => (
                         <TransaksiList
                         key = {item.id_transaksi}
                         id_transaksi= {item.id_transaksi}
-                        member_nama= {item.member.nama}
-                        member_alamat = {item.member.alamat}
+                        nama_customer= {item.customer.nama}
+                        alamat_customer = {item.customer.alamat}
                         status= {item.status}
+                        pembayaran= {item.pembayaran}
                         time = {item.tgl}
                         pakets = {item.detail_transaksi}
                         />
                     ))}
+                    </div>
                 </div>
 
                 {/* modal transaksi */}
@@ -130,8 +153,31 @@ export default class Transaksi extends React.Component{
                     <Modal.Header closeButton>
                         <Modal.Title>Form Transaksi</Modal.Title>
                     </Modal.Header>
-                    <Form onSubmit={e => this.handleSave(e)}>
-
+                    <Form onSubmit={e => this.findCustomer(e)}>
+                        <Modal.Body>
+                            <Form.Group className="mb-3" controlId="nama">
+                                <Form.Label>Nama</Form.Label>
+                                <Form.Control type="text" name="nama" placeholder="Masukkan Nama" value={this.state.nama_customer}
+                                    onChange={e => this.setState({ nama_customer: e.target.value })}
+                                    required
+                                />
+                            </Form.Group>
+                            <Form.Group className="mb-3" controlId="nama">
+                                <Form.Label>Alamat</Form.Label>
+                                <Form.Control type="text" name="alamat" placeholder="Masukkan Alamat" value={this.state.alamat}
+                                    onChange={e => this.setState({ alamat: e.target.value })}
+                                    required
+                                />
+                            </Form.Group>
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <Button className="btn btn-danger m-1" onClick={this.handleClose}>
+                                Close
+                            </Button>
+                            <Button className="btn btn-success m-1" type="submit" onClick={this.handleClose}>
+                                Save
+                            </Button>
+                        </Modal.Footer>
                     </Form>
                 </Modal>
             </div>

@@ -10,7 +10,7 @@ export default class Paket extends React.Component{
         this.state = {
             paket: [],
             id_paket: "",
-            jenis: "",
+            nama: "",
             harga: "",
             image: null,
             uploadFile: true,
@@ -32,7 +32,7 @@ export default class Paket extends React.Component{
     }
     handleAdd = () =>{
         this.setState({
-            jenis: "",
+            nama: "",
             harga: "",
             image: null,
             uploadFile: true,
@@ -44,7 +44,7 @@ export default class Paket extends React.Component{
         this.setState({
             isModalOpen: true,
             id_paket: selectedItem.id_paket,
-            jenis: selectedItem.jenis,
+            nama: selectedItem.nama,
             harga: selectedItem.harga,
             image: null,
             uploadFile: false,
@@ -69,9 +69,9 @@ export default class Paket extends React.Component{
     handleSave = (e) =>{
         e.preventDefault()
         let form = new FormData() 
-        form.append("nama",this.nama)
+        form.append("nama",this.state.nama)
         form.append("harga",this.state.harga)
-        form.append("image". this.state.image)
+        form.append("image", this.state.image)
 
         let url = ""
 
@@ -92,7 +92,7 @@ export default class Paket extends React.Component{
             axios.put(url, form)
             .then(res =>{
                 this.getPaket()
-                this.handleChange()
+                this.handleClose()
             })
             .catch(err => {
                 console.log(err.message)
@@ -139,7 +139,41 @@ export default class Paket extends React.Component{
                     <button className="col-2 btn ms-3 my-2" onClick={() => this.handleAdd()} style={{backgroundColor: "black", color: "rgb(0, 222, 222)"}}>
                         Tambah Paket
                     </button>
-                    <div className='ms-2 my-3'>
+                    <div className="mx-3">
+                    <table className="table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>gambar</th>
+                                <th>Nama</th>
+                                <th>Harga</th>
+                                <th>option</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {this.state.paket.map((item, index) => (
+                                <tr Key={index}>
+                                    <td>{index+1}</td>
+                                    <td>
+                                        <div class="col-md-4 text-center">
+                                            <img className='img-fluid rounded-start py-2 px-1' width="70" height="70" src={"http://localhost:1305/image/paket/" + item.image} alt={item.image}/> 
+                                        </div>
+                                    </td>
+                                    <td>{item.nama}</td>
+                                    <td>Rp. {item.harga.toLocaleString('de-DE')}</td>
+                                    <td>
+                                        <button className="btn btn-light m-1 text-success" onClick={() => this.handleEdit(item)}>Edit</button> 
+                                        <button className="btn btn-light m-1 text-danger" onClick={() => this.handleDelete(item.id_user)}>Delete</button> 
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                    </div>
+
+
+
+                    {/* <div className='ms-3 my-3'>
                         {this.state.paket.map(item => (
                             <PaketList
                             key = {item.id_paket}
@@ -151,19 +185,19 @@ export default class Paket extends React.Component{
                                 onDrop={() => {this.handleDelete(item.id_paket)}}
                             />
                         ))}
-                    </div>
+                    </div> */}
 
                 {/* modal paket */}
                 <Modal show={this.state.isModalOpen} onHide={this.handleClose}>
                     <Modal.Header closeButton>
                         <Modal.Title>form paket</Modal.Title>
                     </Modal.Header>
-                    <Form className="bg-opocity-10" onSubmit={e => this.handleSave(e)}>
+                    <Form onSubmit={e => this.handleSave(e)}>
                         <Modal.Body>
                         <Form.Group className="mb-3" controlId="jenis">
-                            <Form.Label className="" >Jenis</Form.Label>
-                            <Form.Control className="" type="text" name="jenis" placeholder="Masukkan Jenis" value={this.state.jenis}
-                                onChange={e => this.setState({ jenis: e.target.value })}
+                            <Form.Label className="" >Nama</Form.Label>
+                            <Form.Control className="" type="text" name="nama" placeholder="Masukkan Jenis" value={this.state.nama}
+                                onChange={e => this.setState({ nama: e.target.value })}
                                 required
                             />
                         </Form.Group>
@@ -174,6 +208,20 @@ export default class Paket extends React.Component{
                                     required
                                 />
                         </Form.Group>
+                        {this.state.action === "update" && this.state.uploadFile === false ? (
+                                <Button className="btn mb-1 btn-block" style={{backgroundColor:"black"}}
+                                    onClick={() => this.setState({ uploadFile: true })}>
+                                    Ubah Gambar
+                                </Button>
+
+                            ) : (
+
+                                <Form.Group className="mb-3" controlId="image">
+                                    <Form.Label>Image</Form.Label>
+                                    <Form.Control type="file" name="image" placeholder="Pilih Gambar anda"
+                                                    value={this.state.Image} onChange={(e)=>this.handleFile(e)}/>
+                                </Form.Group>
+                            )}
                         </Modal.Body>
                         <Modal.Footer>
                             <Button className="btn btn-danger m-1" onClick={this.handleClose}>

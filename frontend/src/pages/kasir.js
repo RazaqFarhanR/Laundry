@@ -8,6 +8,7 @@ export default class Kasir extends React.Component{
         super()
         this.state = {
             kasir: [],
+            outlets: [],
             id_user: "",
             nama: "",
             alamat: "",
@@ -18,6 +19,7 @@ export default class Kasir extends React.Component{
             password: "",
             isModalOpen: false,
             fillPassword: true,
+            fillOutlet: true,
             token: "",
             action: ""
         }
@@ -56,8 +58,9 @@ export default class Kasir extends React.Component{
             username: SelectedItem.username,
             password: SelectedItem.password,
             role: "kasir",
-            id_outlet: "",
+            id_outlet: SelectedItem.id_outlet,
             fillPassword: false,
+            fillOutlet: false,
             action: "update",
             isModalOpen: true
         })
@@ -127,6 +130,18 @@ export default class Kasir extends React.Component{
             })
         }
     }
+    getOutlet = () =>{
+        let url = "http://localhost:1305/outlet"
+        axios.get(url)
+        .then(res =>{
+            this.setState({
+                outlets : res.data.outlet
+            })
+        })
+        .catch(err =>{
+            console.log(err.message)
+        })
+    }
     getKasir = () => {
         let url  = "http://localhost:1305/api/user/kasir"
         axios.get(url, this.headerConfig())
@@ -141,6 +156,7 @@ export default class Kasir extends React.Component{
     }
     componentDidMount = () =>{
         this.getKasir()
+        this.getOutlet()
     }
     render(){
         return(
@@ -229,15 +245,6 @@ export default class Kasir extends React.Component{
                                     required
                                 />
                             </Form.Group>
-                            <Form.Group className="mb-3" controlId="telepon">
-                                <Form.Label className="text-white" >outlet</Form.Label>
-                                <Form.Select aria-label="Default select example">
-                                    <option>Open this select menu</option>
-                                    <option value="1">One</option>
-                                    <option value="2">Two</option>
-                                    <option value="3">Three</option>
-                                </Form.Select>
-                            </Form.Group>
                             <Form.Group className="mb-3" controlId="username">
                                 <Form.Label className="text-white">Username</Form.Label>
                                 <Form.Control className="text-warning bg-dark" type="text" name="username" placeholder="Masukkan Username" value={this.state.username}
@@ -259,6 +266,25 @@ export default class Kasir extends React.Component{
                                         onChange={e => this.setState({ password: e.target.value })}
                                     />
                                 </Form.Group>
+                            )}
+                            {this.state.action === "update" && this.state.fillOutlet === false ? (
+                                <Button className="btn btn-dark mb-1 btn-block text-warning" style={{backgroundColor:"black"}}
+                                    onClick={() => this.setState({ fillOutlet: true })}>
+                                    Change Outlet
+                                </Button>
+
+                            ) : (
+                                <Form.Group className="mb-3" controlId="telepon">
+                                    <Form.Label className="text-white" >outlet</Form.Label>
+                                    <Form.Select aria-label="Default select example">
+                                    <option>--- select outlet ---</option>
+                                    {this.state.outlets.map((item) =>(
+                                        <option value={item.id_outlet} onChange={e => this.setState({ id_outlet: e.target.value })} >{item.nama_outlet}</option>
+                                        )
+                                    )}
+                                    </Form.Select>
+                                </Form.Group>
+
                             )}
                         </Modal.Body>
                         <Modal.Footer>

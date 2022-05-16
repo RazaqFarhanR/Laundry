@@ -31,13 +31,17 @@ export default class TransaksiList extends React.Component{
                             <h6 className='text-light'>{this.props.status}</h6>
                         </div>
                         <div className='col-lg-2 col-sm-12'>
+                            <small className='text-info'>Pembayaran</small>
+                            <h6 className='text-light'>{this.props.pembayaran}</h6>
+                        </div>
+                        <div className='col-lg-2 col-sm-12'>
                             <small className='text-info'>Total Amount</small>
                             <h6 className='text-danger'>Rp {this.getAmount(this.props.pakets).toLocaleString('de-DE')}</h6>
                         </div>
-                        <div className='col-lg-2 col-sm-12'>
-                            <small className='text-bold text-info'>Tgl_masuk: {this.ConvertTime(this.props.time)}</small>
+                        <div className='col-lg-1 col-sm-12'>
+                            <small className='text-bold text-info'>Tgl-masuk {this.ConvertTime(this.props.time)}</small>
                         </div>
-                        <div className='col-lg-2 col-sm-12'>
+                        <div className='col-lg-1 col-sm-12'>
                         <button type="button" class="btn btn-sm btn-danger m-2" data-bs-toggle="modal" data-bs-target={`#modalDetail${this.props.id_transaksi}`}>
                                 Details
                         </button>
@@ -70,7 +74,7 @@ export default class TransaksiList extends React.Component{
                                         {this.props.pakets.map((item, index) => (
                                             <tr key={item.id_paket}>
                                                 <td>{`${index + 1}`}</td>
-                                                <td>{item.paket.jenis}</td>
+                                                <td>{item.paket.nama}</td>
                                                 <td>Rp {item.harga.toLocaleString('de-DE')}</td>
                                                 <td>{item.qty}</td>
                                                 <td className='text-right'>Rp {(item.harga * item.qty).toLocaleString('de-DE')}</td>

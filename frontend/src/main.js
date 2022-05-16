@@ -9,12 +9,13 @@ import Paket from "./pages/paket";
 import Transaksi from "./pages/transaksi";
 import Dashboard from "./pages/dashboard";
 import Outlet from "./pages/outlet";
+import Keranjang from "./pages/keranjang";
 
 class Main extends React.Component{
     render(){
         return (
             <Switch>
-                <Route exact path="/" component={Home} />
+                <Route exact path="/" component={Home}/>
                 <Route path="/dashboard" component={Dashboard}/>
                 <Route path="/login" component={Login}/>
                 <Route path="/admin" component={Admin}/>
@@ -23,6 +24,7 @@ class Main extends React.Component{
                 <Route path="/paket" component={Paket}/>
                 <Route path="/transaksi" component={Transaksi}/>
                 <Route path="/outlet" component={Outlet}/>
+                <Route path="/keranjang" component={Keranjang}/>
             </Switch>
         )
     }

@@ -8,6 +8,7 @@ export default class Admin extends React.Component{
         super()
         this.state = {
             admin:[],
+            outlets: [],
             id_user: "",
             nama:"",
             alamat: "",
@@ -16,7 +17,9 @@ export default class Admin extends React.Component{
             username: "",
             password: "",
             role: "",
+            id_outlet: "",
             fillPassword: true,
+            fillOutlet: true,
             token: "",
             action: "",
             isModalOpen: false
@@ -43,6 +46,7 @@ export default class Admin extends React.Component{
             username: "",
             password: "",
             role: "admin",
+            id_outlet: "",
             action: "insert",
             isModalOpen: true,
         })
@@ -57,7 +61,9 @@ export default class Admin extends React.Component{
             username: SelectedItem.username,
             password: SelectedItem.password,
             role: "admin",
+            id_outlet: SelectedItem.id_outlet,
             fillPassword: false,
+            fillOutlet: false,
             action: "update",
             isModalOpen: true
         })
@@ -98,12 +104,13 @@ export default class Admin extends React.Component{
             gender: this.state.gender,
             phone: this.state.phone,
             username: this.state.username,
-            role: this.state.role
+            role: this.state.role,
+            id_outlet: this.state.id_outlet
         }
         if (this.state.fillPassword){
             form.password = this.state.password
         }
-        let url = "http://localhost:1305/api/user"
+        let url = ""
 
         if (this.state.action === "insert"){
             
@@ -112,7 +119,9 @@ export default class Admin extends React.Component{
             axios.post(url, form, this.headerConfig())
             .then(res =>{
                 this.getAdmin()
+                this.getOutlet()
                 this.handleClose()
+                console.log(this.state.id_outlet)
             })
             .catch(err => {
                 console.log(err.message)
@@ -123,6 +132,7 @@ export default class Admin extends React.Component{
             axios.put(url, form, this.headerConfig())
             .then(res =>{
                 this.getAdmin()
+                this.getOutlet()
                 this.handleClose()
             })
             .catch(err => {
@@ -144,6 +154,18 @@ export default class Admin extends React.Component{
             })
         }
     }
+    getOutlet = () =>{
+        let url = "http://localhost:1305/outlet"
+        axios.get(url)
+        .then(res =>{
+            this.setState({
+                outlets : res.data.outlet
+            })
+        })
+        .catch(err =>{
+            console.log(err.message)
+        })
+    }
     getAdmin = () => {
         let url = "http://localhost:1305/api/user/admin"
         axios.get(url, this.headerConfig())
@@ -158,6 +180,7 @@ export default class Admin extends React.Component{
     }
     componentDidMount = () =>{
         this.getAdmin()
+        this.getOutlet()
     }
     render(){
         return(
@@ -178,6 +201,7 @@ export default class Admin extends React.Component{
                             <th>Alamat</th>
                             <th>Jenis Kelamin</th>
                             <th>Telp</th>
+                            <th>Outlet</th>
                             <th>Option</th>
                         </tr>
                     </thead>
@@ -189,6 +213,7 @@ export default class Admin extends React.Component{
                                 <td>{item.alamat}</td>
                                 <td>{item.gender}</td>
                                 <td>{item.phone}</td>
+                                <td>{item.outlet.nama_outlet}</td>
                                 <td>
                                     <button className="btn btn-light m-1 text-success" onClick={() => this.handleEdit(item)}>Edit</button> 
                                     <button className="btn btn-light m-1 text-danger" onClick={() => this.handleDelete(item.id_user)}>Delete</button> 
@@ -264,6 +289,24 @@ export default class Admin extends React.Component{
                                     <Form.Control className="text-warning bg-dark" type="password" name="password" placeholder="Masukkan Password"
                                         onChange={e => this.setState({ password: e.target.value })}
                                     />
+                                </Form.Group>
+                            )}
+                            {this.state.action === "update" && this.state.fillOutlet === false ? (
+                                <Button className="btn btn-dark mb-1 btn-block text-warning" style={{backgroundColor:"black"}}
+                                    onClick={() => this.setState({ fillOutlet: true })}>
+                                    Change Outlet
+                                </Button>
+
+                            ) : (
+                                <Form.Group className="mb-3" controlId="outlet">
+                                    <Form.Label className="text-white" >outlet</Form.Label>
+                                    <Form.Select aria-label="Default select example">
+                                    <option>--- select outlet ---</option>
+                                    {this.state.outlets.map((item) =>(
+                                        <option name="outlet" value={item.id_outlet} onChange={e => this.setState({ id_outlet: e.target.value })} >{item.nama_outlet}</option>
+                                        )
+                                    )}
+                                    </Form.Select>
                                 </Form.Group>
                             )}
                         </Modal.Body>
