@@ -49,7 +49,7 @@ app.post("/", (req,res) =>{
 })
 
 //endpoint update data outlet METHOD: PUT, FUNCTION: update
-app.use("/:id", (req,res) =>{
+app.put("/:id", (req,res) =>{
     let param = {
         id_outlet : req.params.id
     }
@@ -73,7 +73,7 @@ app.use("/:id", (req,res) =>{
     })
 })
 //endpoint delete data outlet METHOD: DELETE, FUNCTION: DESTROY
-app.use("/:id", (req,res) =>{
+app.delete("/:id", (req,res) =>{
     let param = {
         id_outlet : req.params.id
     }

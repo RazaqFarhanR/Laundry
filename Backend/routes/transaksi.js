@@ -9,14 +9,15 @@ const detail_transaksi = models.detail_transaksi
 
 //import auth
 const auth = require("../auth")
-app.use(auth) // harus login untuk bisa akses endpoint
+// app.use(auth) // harus login untuk bisa akses endpoint
 
 //endpoint GET all data Transaksi
 app.get("/", (req,res) =>{
     let result = transaksi.findAll({
         include : [
-            "member",
-            "user",
+            "customer",
+            "pegawai",
+            "outlet",
             {
                 model: models.detail_transaksi,
                 as : "detail_transaksi",
@@ -43,8 +44,9 @@ app.post("/status", (req,res) =>{
     let result = transaksi.findAll({
         where: {status : keyword},
         include : [
-            "member",
-            "user",
+            "customer",
+            "pegawai",
+            "outlet",
             {
                 model: models.detail_transaksi,
                 as : "detail_transaksi",
@@ -69,13 +71,14 @@ app.post("/status", (req,res) =>{
 app.post("/", async (req,res) =>{
     let current = new Date().toISOString().split('T')[0]
     let data = {
-        id_member: req.body.id_member,
+        id_customer: req.body.id_customer,
+        id_pegawai: req.body.id_pegawai,
+        id_outlet: req.body.id_outlet,
         tgl: current,
         batas_waktu: req.body.batas_waktu,
         tgl_bayar: req.body.tgl_bayar,
         status: req.body.status,
-        dibayar: req.body.dibayar,
-        id_user: req.body.id_user
+        payment: req.body.payment,
     }
     transaksi.create(data)
     .then(result =>{
@@ -109,12 +112,13 @@ app.put("/:id_transaksi", (req,res) =>{
         id_transaksi : req.params.id_transaksi
     }
     let data = {
-        id_member: req.body.id_member,
+        id_customer: req.body.id_customer,
+        id_pegawai: req.body.id_pegawai,
+        id_outlet: req.body.id_outlet,
         batas_waktu: req.body.batas_waktu,
         tgl_bayar: req.body.tgl_bayar,
         status: req.body.status,
-        dibayar: req.body.dibayar,
-        id_user: req.body.id_user
+        payment: req.body.payment,
     }
     transaksi.update(data, {where: param})
     .then(result =>[

@@ -23,12 +23,13 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       autoIncrement: true
     },
-    jenis: DataTypes.ENUM("kiloan","selimut","bed_cover","kaos"),
-    harga: DataTypes.DOUBLE
+    nama: DataTypes.STRING,
+    harga: DataTypes.DOUBLE,
+    image: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'paket',
-    tableName: "paket"
+    tableName: 'paket'
   });
   return paket;
 };

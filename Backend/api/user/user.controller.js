@@ -4,6 +4,8 @@ const md5 = require('md5');
 const jwt = require('jsonwebtoken');
 const config = require('../auth/secret.json');
 
+const { Op } = require("sequelize");
+
 module.exports = {
     controllerGetAll:(req,res) =>{
         user.findAll()
@@ -19,8 +21,114 @@ module.exports = {
             })
         })
     },
+    controllerGetbyRoleandOutlet:(req,res) =>{
+        let role = req.body.role
+        let id_outlet = req.body.id_outlet
+
+        if (req.body.id_outlet) {
+            user.findAll({
+                include: [
+                    "outlet"
+                ],
+                where : {
+                    [Op.and]: [{
+                        role : role
+                    },
+                    {
+                        id_outlet: id_outlet
+                    }]
+                }
+            })
+            .then(user => {
+                res.json({
+                    count: user.length,
+                    user: user
+                })
+            })
+            .catch(error => {
+                res.json({
+                    message: error.message
+                })
+            })
+        } else {
+            user.findAll({
+                where : {
+                    [Op.and]: [{
+                        role : role
+                    }]
+                }
+            })
+            .then(user => {
+                res.json({
+                    count: user.length,
+                    user: user
+                })
+            })
+            .catch(error => {
+                res.json({
+                    message: error.message
+                })
+            })
+        }
+    },
+    controllerSearch: (req,res) =>{
+        let keyword = req.body.keyword
+        let role = req.body.role
+        
+        if (req.body.id_outlet) {
+            user.findAll({
+                where : {
+                    [Op.and]: [{
+                        nama : { [Op.like] : keyword + '%' }
+                    },
+                    {
+                        role : role
+                    },
+                    {
+                    id_outlet : req.body.id_outlet  
+                    }]
+                }
+            })
+            .then(user => {
+                res.json({
+                    count: user.length,
+                    user: user
+                })
+            })
+            .catch(error => {
+                res.json({
+                    message: error.message
+                })
+            })
+        } else {
+            user.findAll({
+                where : {
+                    [Op.and]: [{
+                        nama : { [Op.like] : keyword + '%' }
+                    },
+                    {
+                        role : role
+                    }]
+                }
+            })
+            .then(user => {
+                res.json({
+                    count: user.length,
+                    user: user
+                })
+            })
+            .catch(error => {
+                res.json({
+                    message: error.message
+                })
+            })
+        }   
+    },
     controllerGetAdmin:(req,res)=>{
-        user.findAll({
+        let result = user.findAll({
+            include: [
+                "outlet"
+            ],  
             where : {role : "admin"}
         })
         .then(user => {
@@ -69,6 +177,28 @@ module.exports = {
                 message: error.message
             })
         })
+    },
+    controllerFindCustomer: async (req,res) =>{
+        let data= {
+            nama: req.body.nama,
+            alamat: req.body.alamat,
+            role : "customer"
+        }
+    
+        //cari data user yang username dan password sama dengan input
+        let result = await user.findOne({where: data})
+        if(result){
+            res.json({
+                count: result.length,
+                data: result
+            })
+        }
+        else{
+            //tidak ditemukan
+            res.json({
+                message: "Data Customer tidak ditemukan"
+            })
+        }
     },
     controllerAdd:(req,res)=>{
         let data = {

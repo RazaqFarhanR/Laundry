@@ -12,8 +12,16 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       this.hasMany(models.transaksi,{
-        foreignKey: "id_user",
-        as: "transaksi user"
+        foreignKey: "id_customer",
+        as: "transaksi customer"
+      })
+      this.hasMany(models.transaksi,{
+        foreignKey: "id_pegawai",
+        as: "transaksi pegawai"
+      })
+      this.belongsTo(models.outlet,{
+        foreignKey: "id_outlet",
+        as: "outlet"
       })
     }
   }
@@ -23,9 +31,16 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true
     },
     nama: DataTypes.STRING,
+    alamat: DataTypes.STRING,
+    gender: DataTypes.ENUM("Laki-laki", "Perempuan"),
+    phone: DataTypes.STRING,    
     username: DataTypes.STRING,
     password: DataTypes.STRING,
-    role: DataTypes.ENUM("admin","kasir")
+    role: DataTypes.ENUM("owner","admin","kasir","customer"),
+    id_outlet: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    }
   }, {
     sequelize,
     modelName: 'user',

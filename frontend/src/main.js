@@ -7,7 +7,8 @@ import Kasir from "./pages/kasir";
 import Customer from "./pages/customer";
 import Paket from "./pages/paket";
 import Transaksi from "./pages/transaksi";
-import Dashboard from "./pages/dashboard";
+import DashboardAdmin from "./pages/dashboard_admin";
+import dashboardOwner from "./pages/dashboard_owner";
 import Outlet from "./pages/outlet";
 import Keranjang from "./pages/keranjang";
 
@@ -16,7 +17,8 @@ class Main extends React.Component{
         return (
             <Switch>
                 <Route exact path="/" component={Home}/>
-                <Route path="/dashboard" component={Dashboard}/>
+                <Route path="/dashboard_owner" component={dashboardOwner}/>
+                <Route path="/dashboard_admin" component={DashboardAdmin}/>
                 <Route path="/login" component={Login}/>
                 <Route path="/admin" component={Admin}/>
                 <Route path="/kasir" component={Kasir}/>

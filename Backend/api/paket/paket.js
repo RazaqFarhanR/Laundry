@@ -14,7 +14,7 @@ const paket = models.paket
 
 //import auth
 const auth = require("../../auth")
-// app.use(auth)
+app.use(auth)
 
 //config storage image (menyiapkan tempat menyimpan foto)
 const storage = multer.diskStorage({

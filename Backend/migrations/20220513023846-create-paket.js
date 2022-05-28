@@ -14,7 +14,7 @@ module.exports = {
       harga: {
         type: Sequelize.DOUBLE
       },
-      gambar: {
+      Image: {
         type: Sequelize.STRING
       },
       createdAt: {

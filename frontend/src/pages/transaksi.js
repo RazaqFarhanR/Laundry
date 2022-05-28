@@ -10,12 +10,14 @@ export default class Transaksi extends React.Component{
         super()
         this.state={
             transaksis: [],
+            cart: [],
             nama_customer: "",
             alamat: "",
             token: "",
             selectedItem: null,
             keyword: "",
-            isModalOpen: false
+            modalCustomer: false,
+            modalPaket: false
         }
         if(localStorage.getItem('token')){
             this.state.token = localStorage.getItem('token')
@@ -35,12 +37,12 @@ export default class Transaksi extends React.Component{
             nama_customer: "",
             alamat:"",
             action: "insert",
-            isModalOpen: true
+            modalCustomer: true
         })
     }
     handleClose = () =>{
         this.setState({
-            isModalOpen: false
+            modalCustomer: false
         })
     }
     handleChange = (e) =>{
@@ -66,27 +68,33 @@ export default class Transaksi extends React.Component{
         })
     
     }
-    findCustomer = (e) =>{
-        e.preventDefault()
-        let data = {
-            nama: this.state.nama_customer,
-            alamat: this.state.alamat
-        }
-        let url = "http://localhost:1305/api/user/find"
-        axios.post(url, data)
-        .then(res => {
-            if (res.data.data){
-                let id_customer = res.data.data.id_user
-                let customer = res.data.data
-                localStorage.setItem("id_customer", id_customer)
-                localStorage.setItem("customer", JSON.stringify(customer))
-                window.location = "/keranjang"
-            }
-            else{
-                window.alert(res.data.message)
-                // window.reload();
-            }
-        })
+    // findCustomer = (e) =>{
+    //     e.preventDefault()
+    //     let data = {
+    //         nama: this.state.nama_customer,
+    //         alamat: this.state.alamat
+    //     }
+    //     let url = "http://localhost:1305/api/user/find"
+    //     axios.post(url, data, this.headerConfig())
+    //     .then(res => {
+    //         if (res.data.data){
+    //             let id_customer = res.data.data.id_user
+    //             let customer = res.data.data
+    //             localStorage.setItem("id_customer", id_customer)
+    //             localStorage.setItem("customer", JSON.stringify(customer))
+    //             window.location = "/keranjang"
+    //         }
+    //         else{
+    //             window.alert(res.data.message)
+    //             // window.reload();
+    //         }
+    //     })
+    // }
+    addCart = (e) => {
+        let tempCart = []
+
+        localStorage.setItem('cart', JSON.stringify(tempCart))
+        window.location = "/customer"
     }
     getTransaksi = () =>{
         let url = "http://localhost:1305/transaksi"
@@ -109,12 +117,12 @@ export default class Transaksi extends React.Component{
             <div>
                 <Navbar/>
                 <div className="card m-3 rounded-4">
-                    <div className="card-header" style={{backgroundColor: "rgb(211, 0, 0)", border: "none"}}>
+                    <div className="card-header" style={{backgroundColor: "#a6051a", border: "none"}}>
                         <h2 className="text-light text-center">Transaksi</h2>
                     </div>
-                    <button className="col-2 btn ms-3 mt-2" onClick={() => this.handleAdd()} style={{backgroundColor: "black", color: "rgb(0, 222, 222)"}}>
+                    {/* <button className="col-2 btn ms-3 mt-2" onClick={(e) => this.addCart()} style={{backgroundColor: "black", color: "rgb(0, 222, 222)"}}>
                         Tambah Pesanan
-                    </button>
+                    </button> */}
                     <div className="d-flex justify-content-around mx-3  mt-3">
                         <Button className="btn-filter" variant="outline-dark mb-3 w-100 m-1" name="keyword" onClick={this.getTransaksi}>
                             Semua
@@ -149,7 +157,7 @@ export default class Transaksi extends React.Component{
                 </div>
 
                 {/* modal transaksi */}
-                <Modal show={this.state.isModalOpen} onHide={this.handleClose}>
+                <Modal show={this.state.modalCustomer} onHide={this.handleClose}>
                     <Modal.Header closeButton>
                         <Modal.Title>Form Transaksi</Modal.Title>
                     </Modal.Header>
@@ -175,7 +183,7 @@ export default class Transaksi extends React.Component{
                                 Close
                             </Button>
                             <Button className="btn btn-success m-1" type="submit" onClick={this.handleClose}>
-                                Save
+                                Next
                             </Button>
                         </Modal.Footer>
                     </Form>

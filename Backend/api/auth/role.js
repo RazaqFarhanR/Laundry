@@ -12,22 +12,6 @@ exports.IsAdmin = async (req, res, next) => {
         return res.status(401).send("Forbidden! You are Not Admin");
     }
   }
-  // exports.IsOwner = async (req, res, next) =>{
-  //   if (req.user.role === "owner") {
-  //     next();
-  //   }
-  //   else{
-  //       return res.status(401).send("Forbidden! You are Not Owner");
-  //   }
-  // }
-  // exports.IsKasir = async (req, res, next) =>{
-  //   if (req.user.role === "kasir") {
-  //     next();
-  //   }
-  //   else{
-  //       return res.status(401).send("Forbidden! You are Not kasir");
-  //   }
-  // }
 
   exports.IsAdminorIsOwner = async (req,res, next) =>{
     if (req.user.role === "admin" || "owner") {
@@ -42,7 +26,7 @@ exports.IsAdmin = async (req, res, next) => {
       next();
     }
     else{
-        return res.status(401).send("Forbidden! You are Not Admin or Owner");
+        return res.status(401).send("Forbidden! You are Not Admin or Kasir");
     }
   }
   

@@ -11,6 +11,15 @@ module.exports = {
       nama: {
         type: Sequelize.STRING
       },
+      alamat: {
+        type: Sequelize.STRING
+      },
+      gender : {
+        type: Sequelize.ENUM("Laki-laki","Perempuan")
+      },
+      phone: {
+        type: Sequelize.STRING
+      },
       username: {
         type: Sequelize.STRING
       },
@@ -18,7 +27,15 @@ module.exports = {
         type: Sequelize.STRING
       },
       role: {
-        type: Sequelize.ENUM("owner","admin","kasir")
+        type: Sequelize.ENUM("owner","admin","kasir","customer")
+      },
+      id_outlet: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: "outlet",
+          key: "id_outlet"
+        }
       },
       createdAt: {
         allowNull: false,

@@ -17,6 +17,9 @@ const auth = require("../auth")
 const jwt = require("jsonwebtoken")
 const SECRET_KEY = "BelajarNodeJSItuMenyengankan"
 
+//import operator sequelize
+const { Op } = require("sequelize");
+
 //endpoint GET data user
 app.get("/", auth, (req,res) =>{
     user.findAll()
@@ -33,10 +36,58 @@ app.get("/", auth, (req,res) =>{
     })
 })
 
-//endpoint GET data user where role: kasir
-app.get("/kasir", auth, (req,res) =>{
+//endpoint GET data user where keyword
+app.post("/cari", auth, (req,res) =>{
+    let keyword = req.body.keyword
     user.findAll({
-        where : {role : "kasir"}
+        where : {
+            [Op.or]:{
+                nama : { [Op.like] : '%' + keyword + '%' }
+            }
+        }
+    })
+    .then(user => {
+        res.json({
+            count: user.length,
+            user: user
+        })
+    })
+    .catch(error => {
+        res.json({
+            message: error.message
+        })
+    })
+})
+
+//endpoint GET data user where role: pelanggan
+app.get("/pelanggan", auth, (req,res) =>{
+    user.findAll({
+        where : {role : "pelanggan"}
+    })
+    .then(user => {
+        res.json({
+            count: user.length,
+            user: user
+        })
+    })
+    .catch(error => {
+        res.json({
+            message: error.message
+        })
+    })
+})
+
+//endpoint GET data user where role: admin & kasir
+app.get("/pegawai", auth, (req,res) =>{
+    user.findAll({
+        where : {
+            [Op.or] : {
+                role : "admin"
+            },
+            // [Op.or]:{
+            //     role : "kasir"
+            // }
+        }
     })
     .then(user => {
         res.json({
@@ -52,9 +103,12 @@ app.get("/kasir", auth, (req,res) =>{
 })
 
 //endpoint save data admin
-app.post("/", auth, (req,res) => {
+app.post("/", (req,res) => {
     let data = {
         nama: req.body.nama,
+        alamat : req.body.alamat,
+        gender : req.body.gender,
+        phone: req.body.phone,
         username: req.body.username,
         password: md5(req.body.password),
         role: req.body.role
@@ -79,11 +133,16 @@ app.put("/:id", auth, (req,res)=>{
     }
     let data = {
         nama: req.body.nama,
+        alamat : req.body.alamat,
+        gender : req.body.gender,
+        phone: req.body.phone,
         username: req.body.username,
-        role: req.body.role
     }
     if(req.body.password){
         data.password = md5(req.body.password)
+    }
+    if(req.body.role){
+        data.role = req.body.role
     }
     user.update(data, {where: param})
     .then(result => {

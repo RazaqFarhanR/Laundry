@@ -2,6 +2,7 @@ import React from "react"
 import axios from "axios"
 import {Modal, Button, Form} from "react-bootstrap"
 import Navbar from "../components/navbar"
+import Sidebar from "../components/sidebar"
 
 export default class Admin extends React.Component{
     constructor(){
@@ -154,18 +155,18 @@ export default class Admin extends React.Component{
             })
         }
     }
-    getOutlet = () =>{
-        let url = "http://localhost:1305/outlet"
-        axios.get(url)
-        .then(res =>{
-            this.setState({
-                outlets : res.data.outlet
-            })
-        })
-        .catch(err =>{
-            console.log(err.message)
-        })
-    }
+    // getOutlet = () =>{
+    //     let url = "http://localhost:1305/outlet"
+    //     axios.get(url)
+    //     .then(res =>{
+    //         this.setState({
+    //             outlets : res.data.outlet
+    //         })
+    //     })
+    //     .catch(err =>{
+    //         console.log(err.message)
+    //     })
+    // }
     getAdmin = () => {
         let url = "http://localhost:1305/api/user/admin"
         axios.get(url, this.headerConfig())
@@ -180,98 +181,104 @@ export default class Admin extends React.Component{
     }
     componentDidMount = () =>{
         this.getAdmin()
-        this.getOutlet()
+        // this.getOutlet()
     }
     render(){
         return(
-            <div>
+            <div style={{backgroundColor: "#c6c6c6"}}>
                 <Navbar/>
-                <div className="card m-3">
-                <div className="card-header" style={{backgroundColor: "rgb(211, 0, 0)", border: "none"}}>
-                    <h2 className="text-light">Admin</h2>
+                <div className='container-fluid'>
+                    <div className='row'>
+                        <Sidebar/>
+                        <div className='col-md-9 ms-sm-auto col-lg-10 px-md-4 ' style={{maxHeight: "92vh", overflowY: "auto", overflowX: "hidden"}}>
+                            <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
+                                <div className="col-lg-12 col-sm-12 scroll">
+                                    <div className="card">
+                                        <div className="card-header" style={{backgroundColor: "#a6051a", border: "none"}}>
+                                            <h2 className="text-light">Admin</h2>
+                                        </div>
+                                        <button className="col-2 btn ms-3 my-2" onClick={() => this.handleAdd()} style={{backgroundColor: "black", color: "rgb(0, 222, 222)"}}>
+                                            Tambah Admin
+                                        </button>
+                                        <div className="mx-3">
+                                            <table className="table text-center me-2">
+                                                <thead>
+                                                    <tr className="">
+                                                        <th>#</th>
+                                                        <th>Nama</th>
+                                                        <th>Alamat</th>
+                                                        <th>Jenis Kelamin</th>
+                                                        <th>Telp</th>
+                                                        <th>Outlet</th>
+                                                        <th>Option</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {this.state.admin.map((item, index) =>(
+                                                        <tr key={index}>
+                                                            <td>{index+1}</td>
+                                                            <td>{item.nama}</td>
+                                                            <td>{item.alamat}</td>
+                                                            <td>{item.gender}</td>
+                                                            <td>{item.phone}</td>
+                                                            <td>{item.outlet.nama_outlet}</td>
+                                                            <td>
+                                                                <button className="btn btn-light m-1 text-success" onClick={() => this.handleEdit(item)}>Edit</button> 
+                                                                <button className="btn btn-light m-1 text-danger" onClick={() => this.handleDelete(item.id_user)}>Delete</button> 
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <button className="col-2 btn ms-3 my-2" onClick={() => this.handleAdd()} style={{backgroundColor: "black", color: "rgb(0, 222, 222)"}}>
-                    Tambah Admin
-                </button>
-                <table className="table text-center border-dark me-2">
-                    <thead>
-                        <tr className="">
-                            <th>#</th>
-                            <th>Nama</th>
-                            <th>Alamat</th>
-                            <th>Jenis Kelamin</th>
-                            <th>Telp</th>
-                            <th>Outlet</th>
-                            <th>Option</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {this.state.admin.map((item, index) =>(
-                            <tr key={index}>
-                                <td>{index+1}</td>
-                                <td>{item.nama}</td>
-                                <td>{item.alamat}</td>
-                                <td>{item.gender}</td>
-                                <td>{item.phone}</td>
-                                <td>{item.outlet.nama_outlet}</td>
-                                <td>
-                                    <button className="btn btn-light m-1 text-success" onClick={() => this.handleEdit(item)}>Edit</button> 
-                                    <button className="btn btn-light m-1 text-danger" onClick={() => this.handleDelete(item.id_user)}>Delete</button> 
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-
-                    {/* modal member */}
-                    <Modal show={this.state.isModalOpen} onHide={this.handleClose}
+                {/* modal member */}
+                <Modal show={this.state.isModalOpen} onHide={this.handleClose}
                       size="xl"
                       aria-labelledby="contained-modal-title-vcenter"
                       centered>
-                    <Modal.Header closeButton className="">
+                    <Modal.Header closeButton>
                         <Modal.Title>form admin</Modal.Title>
                     </Modal.Header>
-                    <Form className="bg-dark bg-opocity-10" onSubmit={e => this.handleSave(e)}>
+                    <Form onSubmit={e => this.handleSave(e)}>
                         <Modal.Body>
                             <Form.Group className="mb-3" controlId="nama">
-                                <Form.Label className="text-white" >Nama</Form.Label>
-                                <Form.Control className="text-warning bg-dark" type="text" name="nama" placeholder="Masukkan Nama" value={this.state.nama}
+                                <Form.Label>Nama</Form.Label>
+                                <Form.Control type="text" name="nama" placeholder="Masukkan Nama" value={this.state.nama}
                                     onChange={e => this.setState({ nama: e.target.value })}
                                     required
                                 />
                             </Form.Group>
                             <Form.Group className="mb-3" controlId="alamat">
-                                <Form.Label className="text-white" >Alamat</Form.Label>
-                                <Form.Control className="text-warning bg-dark" type="text" name="alamat" placeholder="Masukkan alamat" value={this.state.alamat}
+                                <Form.Label>Alamat</Form.Label>
+                                <Form.Control type="text" name="alamat" placeholder="Masukkan alamat" value={this.state.alamat}
                                     onChange={e => this.setState({ alamat: e.target.value })}
                                     required
                                 />                                
                             </Form.Group>
                             <Form.Group className="mb-3" controlId="jenisKelamin">
-                                <Form.Label className="text-white">Jenis Kelamin</Form.Label>
-                                    <div className="form-check text-light">
-                                        <input className="form-check-input" type="radio" name="exampleRadios" value={"Laki-laki"} onChange={e => this.setState({ gender: e.target.value })}/>
-                                        <label className="form-check-label" for="exampleRadios1">
-                                            Laki-laki
-                                        </label>
-                                    </div>
-                                    <div className="form-check text-light">
-                                        <input className="form-check-input" type="radio" name="exampleRadios" value={"Perempuan"} onChange={e => this.setState({ gender: e.target.value })}/>
-                                        <label className="form-check-label" for="exampleRadios2">
-                                            Perempuan
-                                        </label>
-                                    </div>
+                                <Form.Label>Jenis Kelamin</Form.Label>
+                                    <select name="gender" value={this.state.gender} onChange={this.handleChange} className="form-select form-select-sm" aria-label=".form-select-sm example">
+                                        <option selected></option>
+                                        <option value={"Laki-laki"} onChange={e => this.handleChange({ gender: e.target.value })}>Laki-laki</option>
+                                        <option value={"Perempuan"} onChange={e => this.handleChange({ gender: e.target.value })}>Perempuan</option>
+                                    </select>
                             </Form.Group>
                             <Form.Group className="mb-3" controlId="telepon">
-                                <Form.Label className="text-white" >Telepon</Form.Label>
-                                <Form.Control className="text-warning bg-dark" type="text" name="phone" placeholder="Masukkan Telepon" value={this.state.phone}
+                                <Form.Label>Telepon</Form.Label>
+                                <Form.Control type="text" name="phone" placeholder="Masukkan Telepon" value={this.state.phone}
                                     onChange={e => this.setState({ phone: e.target.value })}
                                     required
                                 />
                             </Form.Group>
                             <Form.Group className="mb-3" controlId="username">
-                                <Form.Label className="text-white">Username</Form.Label>
-                                <Form.Control className="text-warning bg-dark" type="text" name="username" placeholder="Masukkan Username" value={this.state.username}
+                                <Form.Label>Username</Form.Label>
+                                <Form.Control type="text" name="username" placeholder="Masukkan Username" value={this.state.username}
                                     onChange={e => this.setState({ username: e.target.value })}
                                     required
                                 />
@@ -285,8 +292,8 @@ export default class Admin extends React.Component{
                             ) : (
 
                                 <Form.Group className="mb-3" controlId="password">
-                                    <Form.Label className="text-white">Password</Form.Label>
-                                    <Form.Control className="text-warning bg-dark" type="password" name="password" placeholder="Masukkan Password"
+                                    <Form.Label>Password</Form.Label>
+                                    <Form.Control type="password" name="password" placeholder="Masukkan Password"
                                         onChange={e => this.setState({ password: e.target.value })}
                                     />
                                 </Form.Group>
@@ -299,7 +306,7 @@ export default class Admin extends React.Component{
 
                             ) : (
                                 <Form.Group className="mb-3" controlId="outlet">
-                                    <Form.Label className="text-white" >outlet</Form.Label>
+                                    <Form.Label>outlet</Form.Label>
                                     <Form.Select aria-label="Default select example">
                                     <option>--- select outlet ---</option>
                                     {this.state.outlets.map((item) =>(
@@ -312,17 +319,16 @@ export default class Admin extends React.Component{
                         </Modal.Body>
                         <Modal.Footer>
 
-                            <Button className="btn btn-dark m-1 text-danger" style={{backgroundColor:"black"}} onClick={this.handleClose}>
+                            <Button className="btn btn-danger" onClick={this.handleClose}>
                                 Close
                             </Button>
-                            <Button className="btn btn-dark m-1 text-success" type="submit" style={{backgroundColor:"black"}} onClick={this.handleClose}>
+                            <Button className="btn btn-success" type="submit" onClick={this.handleClose}>
                                 Save
                             </Button>
 
                         </Modal.Footer>
                     </Form>
                 </Modal>
-                </div>
             </div>
         )
     }

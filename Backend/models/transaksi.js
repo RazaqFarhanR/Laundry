@@ -11,13 +11,17 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.belongsTo(models.member,{
-        foreignKey: "id_member",
-        as: "member"
+      this.belongsTo(models.user,{
+        foreignKey: "id_customer",
+        as: "customer"
       })
       this.belongsTo(models.user,{
-        foreignKey: "id_user",
-        as: "user"
+        foreignKey: "id_pegawai",
+        as: "pegawai"
+      })
+      this.belongsTo(models.outlet,{
+        foreignKey: "id_outlet",
+        as: "outlet"
       })
       this.hasMany(models.detail_transaksi,{
         foreignKey: "id_transaksi",
@@ -32,7 +36,15 @@ module.exports = (sequelize, DataTypes) => {
       autoIncrement: true,
       allowNull: false
     },
-    id_member: {
+    id_customer: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    id_pegawai: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    id_outlet: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
@@ -40,11 +52,7 @@ module.exports = (sequelize, DataTypes) => {
     batas_waktu: DataTypes.DATE,
     tgl_bayar: DataTypes.DATE,
     status: DataTypes.ENUM("baru","diproses","selesai","diambil"),
-    dibayar: DataTypes.ENUM("dibayar","belum_dibayar"),
-    id_user: {
-      type: DataTypes.INTEGER,
-      allowNull: false
-    }
+    pembayaran: DataTypes.ENUM("dibayar","belum_dibayar"),
   }, {
     sequelize,
     modelName: 'transaksi',

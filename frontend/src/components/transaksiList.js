@@ -3,8 +3,8 @@ import React from 'react'
 export default class TransaksiList extends React.Component{
     getAmount = pakets =>{
         let total = 0
-        pakets.map(it => {
-            total += Number(it.harga) * Number(it.qty)
+        pakets.map(item => {
+            total += Number(item.harga) * Number(item.qty)
         })
         return total
     }
@@ -38,9 +38,9 @@ export default class TransaksiList extends React.Component{
                             <small className='text-info'>Total Amount</small>
                             <h6 className='text-danger'>Rp {this.getAmount(this.props.pakets).toLocaleString('de-DE')}</h6>
                         </div>
-                        <div className='col-lg-1 col-sm-12'>
+                        {/* <div className='col-lg-1 col-sm-12'>
                             <small className='text-bold text-info'>Tgl-masuk {this.ConvertTime(this.props.time)}</small>
-                        </div>
+                        </div> */}
                         <div className='col-lg-1 col-sm-12'>
                         <button type="button" class="btn btn-sm btn-danger m-2" data-bs-toggle="modal" data-bs-target={`#modalDetail${this.props.id_transaksi}`}>
                                 Details
